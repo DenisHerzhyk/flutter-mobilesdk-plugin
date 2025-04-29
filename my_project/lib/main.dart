@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobilesdk_plugin/mobilesdk_plugin.dart';
-// license : "BUU[cd!h8grN,F,%4t[q6XAmLKN+^690UN&rVfkIvZtP4nrIlFWxb&ZfNd0fzDvxE;L[?ttcOP0P=05,!6v$x0k!!5dlj7!H(^!G"
+
 void main() {
   runApp(const MyApp());
 }
