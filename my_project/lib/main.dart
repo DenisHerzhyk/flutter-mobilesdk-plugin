@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   //added
   Future<void> _initializeSDK() async{
-    const licenseKey = r"BUU[cd!h8grN,F,%4t[q6XAmLKN+^690UN&rVfkIvZtP4nrIlFWxb&ZfNd0fzDvxE;L[?ttcOP0P=05,!6v$x0k!!5dlj7!H(^!G";
+    const licenseKey = r"YOUR_LICENSE_KEY";
     bool success = await _mobileSdkPlugin.setSDKLicense(licenseKey);
     if (success) {
       debugPrint("SDK initialized successfully with license.");
