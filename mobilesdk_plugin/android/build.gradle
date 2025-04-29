@@ -1,0 +1,97 @@
+group = "com.tungsten.mobilesdkplugin"
+version = "1.0"
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.1.0")
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        flatDir {
+            dirs 'libs'  // Ensure this includes the AAR directory
+        }
+    }
+}
+
+apply plugin: "com.android.library"
+
+android {
+    namespace = "com.tungsten.mobilesdkplugin"
+
+    compileSdk = 35
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    defaultConfig {
+        minSdk = 26
+    }
+
+    dependencies {
+        implementation 'androidx.core:core:1.9.0'
+        implementation 'androidx.appcompat:appcompat:1.6.1'
+        testImplementation("junit:junit:4.13.2")
+        testImplementation("org.mockito:mockito-core:5.0.0")
+    }
+
+    testOptions {
+        unitTests.all {
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen {false}
+                showStandardStreams = true
+            }
+        }
+    }
+}
+
+def jniLibsArray
+dependencies {
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal()
+        if (project.hasProperty("mavenUrl")) {
+            maven { url mavenUrl }
+        }
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    def sdkRef = null
+
+    project.getRootProject().allprojects.each { proj ->
+        if (proj.name.toLowerCase().equals('sdk')) {
+            sdkRef = proj
+            return true
+        }
+    }
+
+    if (!sdkRef && project.hasProperty("clSdkRef")) {
+        sdkRef = clSdkRef
+    }
+
+    if (sdkRef) {
+        println "SDK present in project; using project reference as dependency"
+        jniLibsArray = []
+        implementation sdkRef
+    } else {
+        println "SDK is not present in project; dependency reference"
+        jniLibsArray = ['libs']
+        repositories {
+            flatDir { dirs 'libs' }
+        }
+        implementation(name: 'sdk-release', ext: 'aar')
+        implementation fileTree(dir: 'libs', exclude: ['okhttp-4.12.0.jar', 'okio-jvm-3.4.0.jar','okio-1.14.0.jar', 'kotlin-stdlib-1.9.10.jar', 'annotations-13.0.jar'], include: '*.jar')
+    }
+}
